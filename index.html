@@ -3,41 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SONIC CARDS - S.A. METRICS</title>
+    <title>SONIC CARDS - S.A. FULL METRICS</title>
     <style>
         body { background: #000; color: #bc13fe; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow: hidden; padding: 10px; }
-        #info-panel { text-align: center; width: 100%; margin-bottom: 10px; }
-        #timer-container { width: 90vw; max-width: 400px; height: 8px; background: #222; border-radius: 10px; margin: 10px auto; overflow: hidden; display: none; border: 1px solid #333; }
-        #timer-bar { width: 100%; height: 100%; background: #00ff41; box-shadow: 0 0 15px #00ff41; transition: width 0.1s linear; }
+        #info-panel { text-align: center; width: 100%; margin-bottom: 5px; }
+        
+        /* Display Digital S.A. [cite: 2026-01-20] */
+        #digital-clock { font-size: 2.2em; font-weight: 900; color: #00ff41; text-shadow: 0 0 15px #00ff41; margin: 5px 0; display: none; font-variant-numeric: tabular-nums; }
+        
+        #timer-container { width: 90vw; max-width: 400px; height: 8px; background: #222; border-radius: 10px; margin: 5px auto; overflow: hidden; border: 1px solid #333; display: none; }
+        #timer-bar { width: 100%; height: 100%; background: #00ff41; box-shadow: 0 0-15px #00ff41; transition: width 0.1s linear; }
+        
         #board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 95vw; max-width: 420px; }
         .card { height: 75px; background: #0a0a0a; border: 2px solid #222; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 28px; color: transparent; transition: 0.3s; position: relative; }
         .card.active, .card.preview { border-color: #bc13fe; box-shadow: 0 0 15px #bc13fe; color: #fff; transform: rotateY(180deg); }
         .card.match { background: #00ff41; border-color: #00ff41; color: #000 !important; cursor: default; animation: explode 0.4s ease-out forwards; }
+        
         @keyframes explode { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(0.95); } }
+        
         .btn-main { background: #bc13fe; color: #fff; border: none; padding: 15px 35px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; box-shadow: 0 5px 20px rgba(188,19,254,0.4); }
-        .btn-reset { background: #00ff41; color: #000; display: none; margin-top: 10px; }
-        #result-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #00ff41; }
-        .metric-box { border: 1px solid #00ff41; padding: 20px; border-radius: 15px; background: #050505; box-shadow: 0 0 30px rgba(0,255,65,0.2); }
+        #result-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 100; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .metric-box { border: 2px solid #00ff41; padding: 30px; border-radius: 20px; background: #050505; color: #00ff41; box-shadow: 0 0 40px rgba(0,255,65,0.2); }
     </style>
 </head>
 <body>
 
     <div id="info-panel">
-        <h1 style="margin:0; font-size:1.3em;">🔱 SONIC CARDS S.A.</h1>
-        <div id="timer-container"><div id="timer-bar"></div></div>
-        <p id="status-txt" style="font-size: 0.7em; color: #555; letter-spacing: 2px;">AGUARDANDO PROTOCOLO</p>
-        <button id="start-btn" class="btn-main" onclick="initSonicSystem()">INICIAR</button>
+        <h1 style="margin:0; font-size:1.2em;">🔱 S.A. DYNAMIC ENGINE</h1>
+        <div id="digital-clock">60.0</div> <div id="timer-container"><div id="timer-bar"></div></div>
+        <p id="status-txt" style="font-size: 0.7em; color: #555; letter-spacing: 2px;">READY FOR SYNC</p>
+        <button id="start-btn" class="btn-main" onclick="initSonicSystem()">INICIAR PROTOCOLO</button>
     </div>
 
     <div id="board"></div>
 
     <div id="result-screen">
         <div class="metric-box">
-            <h2 id="res-title">RELATÓRIO S.A.</h2>
+            <h2>AUDITORIA S.A. [cite: 2026-01-11]</h2>
             <p id="res-percent">PRECISÃO: 0%</p>
             <p id="res-time">TEMPO: 0s</p>
-            <p id="res-status" style="font-weight: 900; font-size: 1.5em; margin: 20px 0;">PENDENTE</p>
-            <button class="btn-main" onclick="location.reload()">NOVO CICLO 🌀</button>
+            <p id="res-status" style="font-weight: 900; font-size: 1.8em; margin: 15px 0;">STATUS</p>
+            <button class="btn-main" onclick="location.reload()">REINICIAR</button>
         </div>
     </div>
 
@@ -52,13 +58,13 @@
         ];
         
         let flippedCards = [], matchedCount = 0, isProcessing = true;
-        let timeLeft = 60, totalClicks = 0, timerInterval;
+        let timeLeft = 60.0, totalClicks = 0, timerInterval;
         const synth = window.speechSynthesis;
 
         function speak(text) {
             synth.cancel(); 
             const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'pt-BR'; u.pitch = 0.8; u.rate = 1.1;
+            u.lang = 'pt-BR'; u.pitch = 0.8; u.rate = 1.2;
             synth.speak(u);
         }
 
@@ -85,31 +91,52 @@
                 board.appendChild(card);
             });
 
-            speak("Memorize os padrões.");
+            speak("Memorize.");
             setTimeout(() => {
                 document.querySelectorAll('.card').forEach(c => { c.classList.remove('preview'); c.innerText = ''; });
                 isProcessing = false;
+                document.getElementById('digital-clock').style.display = 'block';
                 document.getElementById('timer-container').style.display = 'block';
-                speak("Protocolo iniciado.");
+                speak("Iniciado.");
                 timerInterval = setInterval(() => {
                     timeLeft -= 0.1;
-                    document.getElementById('timer-bar').style.width = (timeLeft / 60) * 100 + "%";
+                    updateTimerUI();
                     if (timeLeft <= 0) endSession(false);
                 }, 100);
             }, 3000);
         }
 
+        function updateTimerUI() {
+            const display = document.getElementById('digital-clock');
+            const bar = document.getElementById('timer-bar');
+            display.innerText = timeLeft.toFixed(1);
+            bar.style.width = Math.min(100, (timeLeft / 60) * 100) + "%";
+            
+            if (timeLeft <= 10) {
+                display.style.color = "#ff0033";
+                display.style.textShadow = "0 0 20px #ff0033";
+                bar.style.background = "#ff0033";
+            } else {
+                display.style.color = "#00ff41";
+                bar.style.background = "#00ff41";
+            }
+        }
+
         function checkMatch() {
             const [c1, c2] = flippedCards;
             if (c1.dataset.voice === c2.dataset.voice) {
+                timeLeft = Math.min(60, timeLeft + 4); // Bônus [cite: 2026-01-28]
+                document.getElementById('digital-clock').style.transform = "scale(1.2)";
                 setTimeout(() => {
+                    document.getElementById('digital-clock').style.transform = "scale(1)";
                     c1.classList.add('match'); c2.classList.add('match');
+                    speak("Bônus.");
                     matchedCount++;
                     if (matchedCount === cardPairs.length / 2) endSession(true);
                     flippedCards = [];
                 }, 300);
             } else {
-                timeLeft -= 2; // IPI: Penalidade de Erro [cite: 2026-01-28]
+                timeLeft -= 2; // Penalidade IPI [cite: 2026-01-28]
                 setTimeout(() => {
                     c1.classList.remove('active'); c2.classList.remove('active');
                     c1.innerText = ''; c2.innerText = '';
@@ -124,17 +151,16 @@
             const precision = totalClicks > 0 ? Math.round(((matchedCount * 2) / totalClicks) * 100) : 0;
             document.getElementById('result-screen').style.display = 'flex';
             document.getElementById('res-percent').innerText = `PRECISÃO: ${precision}%`;
-            document.getElementById('res-time').innerText = `TEMPO RESTANTE: ${Math.max(0, timeLeft).toFixed(1)}s`;
+            document.getElementById('res-time').innerText = `TEMPO FINAL: ${Math.max(0, timeLeft).toFixed(1)}s`;
             
-            // Lógica LIBERADO / PENDENTE [cite: 2026-01-12]
             if (win && precision >= 70) {
                 document.getElementById('res-status').innerText = `LIBERADO ${precision}%`;
                 document.getElementById('res-status').style.color = "#00ff41";
-                speak(`Soberania confirmada. Acesso liberado em ${precision} por cento.`);
+                speak("Soberania atingida.");
             } else {
                 document.getElementById('res-status').innerText = `PENDENTE ${precision}%`;
                 document.getElementById('res-status').style.color = "#ff0033";
-                speak(`Falha na blindagem. Status pendente.`);
+                speak("Refaça o protocolo.");
             }
         }
     </script>
