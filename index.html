@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SONIC CARDS - S.A. EDITION</title>
+    <style>
+        body { background: #000; color: #bc13fe; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        #board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 90vw; max-width: 400px; }
+        .card { height: 110px; background: #0a0a0a; border: 2px solid #222; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 40px; color: transparent; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
+        .card.active { border-color: #bc13fe; box-shadow: 0 0 25px #bc13fe; color: #fff; transform: rotateY(180deg); }
+        .card.match { background: #00ff41; border-color: #00ff41; color: #000 !important; cursor: default; box-shadow: 0 0 15px #00ff41; transform: scale(0.95); }
+        #info-panel { margin-bottom: 30px; text-align: center; width: 100%; }
+        .btn-init { background: #bc13fe; color: #fff; border: none; padding: 25px 60px; border-radius: 50px; font-weight: 900; cursor: pointer; font-size: 1.4em; box-shadow: 0 10px 30px rgba(188,19,254,0.3); }
+        .status-msg { margin-top: 15px; font-size: 0.8em; color: #555; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+    <div id="info-panel">
+        <h1 style="margin:0; font-size:1.8em; text-shadow: 0 0 10px #bc13fe;">🔱 SONIC CARDS SA</h1>
+        <p class="status-msg" id="status-txt">SISTEMA AGUARDANDO SINCRONIA</p>
+        <button id="start-btn" class="btn-init" onclick="initSonicSystem()">INICIAR TREINAMENTO</button>
+    </div>
+    <div id="board"></div>
+    <script>
+        const cardPairs = [
+            {s:'🔱',v:'Soberania'}, {s:'🔱',v:'Soberania'},
+            {s:'🌹',v:'Raridade'}, {s:'🌹',v:'Raridade'},
+            {s:'⚡',v:'Impulso'}, {s:'⚡',v:'Impulso'},
+            {s:'💀',v:'Risco'}, {s:'💀',v:'Risco'},
+            {s:'💎',v:'Blindagem'}, {s:'💎',v:'Blindagem'},
+            {s:'🌀',v:'Vortex'}, {s:'🌀',v:'Vortex'},
+            {s:'⚛️',v:'Atomo'}, {s:'⚛️',v:'Atomo'},
+            {s:'👁️',v:'Vigilancia'}, {s:'👁️',v:'Vigilancia'}
+        ];
+        let flippedCards = [];
+        let matchedCount = 0;
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'pt-BR';
+            utterance.pitch = 0.75;
+            window.speechSynthesis.speak(utterance);
+        }
+        function initSonicSystem() {
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('status-txt').innerText = "OUÇA E PAREIE OS PADRÕES";
+            const board = document.getElementById('board');
+            board.innerHTML = '';
+            cardPairs.sort(() => Math.random() - 0.5);
+            cardPairs.forEach((data, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.symbol = data.s;
+                card.dataset.voice = data.v;
+                card.onclick = () => {
+                    if (flippedCards.length < 2 && !card.classList.contains('active') && !card.classList.contains('match')) {
+                        card.classList.add('active');
+                        card.innerText = card.dataset.symbol;
+                        speak(card.dataset.voice);
+                        flippedCards.push(card);
+                        if (flippedCards.length === 2) checkMatch();
+                    }
+                };
+                board.appendChild(card);
+            });
+            speak("Treinamento S.A. Iniciado. Identifique a Soberania.");
+        }
+        function checkMatch() {
+            const [c1, c2] = flippedCards;
+            if (c1.dataset.voice === c2.dataset.voice) {
+                setTimeout(() => {
+                    c1.classList.add('match');
+                    c2.classList.add('match');
+                    speak("Padrão Confirmado.");
+                    matchedCount++;
+                    flippedCards = [];
+                    if (matchedCount === cardPairs.length / 2) {
+                        document.getElementById('status-txt').innerText = "TREINAMENTO COMPLETO";
+                        speak("S.A., sua percepção está em cem por cento. Excelente.");
+                    }
+                }, 400);
+            } else {
+                setTimeout(() => {
+                    c1.classList.remove('active');
+                    c2.classList.remove('active');
+                    c1.innerText = '';
+                    c2.innerText = '';
+                    flippedCards = [];
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
