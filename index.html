@@ -3,137 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SONIC CARDS - S.A. ULTIMATE</title>
+    <title>SONIC CARDS - S.A. PRECISION</title>
     <style>
-        /* Estética Neon & Blindagem Visual S.A. [cite: 2026-02-13] */
-        body { background: #000; color: #bc13fe; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow-x: hidden; padding: 20px 0; }
+        body { background: #000; color: #bc13fe; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow-x: hidden; padding: 10px; }
+        #info-panel { text-align: center; width: 100%; margin-bottom: 15px; }
         
-        #info-panel { text-align: center; width: 100%; margin-bottom: 20px; z-index: 10; }
-        
-        /* Tabuleiro Expandido: 4 Colunas x 6 Linhas [cite: 2026-02-28] */
-        #board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 95vw; max-width: 450px; perspective: 1000px; }
-        
-        .card { height: 85px; background: #0a0a0a; border: 2px solid #222; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 32px; color: transparent; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
-        
-        .card.active { border-color: #bc13fe; box-shadow: 0 0 20px #bc13fe; color: #fff; transform: rotateY(180deg); }
-        
-        /* Efeito de Explosão e Acerto [cite: 2026-02-28] */
-        .card.match { background: #00ff41; border-color: #00ff41; color: #000 !important; cursor: default; animation: explode 0.5s ease-out forwards; transform: scale(0.92); box-shadow: 0 0 25px #00ff41; }
-        
-        @keyframes explode {
-            0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.15); filter: brightness(2); box-shadow: 0 0 50px #00ff41; }
-            100% { transform: scale(0.92); filter: brightness(1); }
-        }
+        /* Barra de Tempo S.A. [cite: 2026-02-28] */
+        #timer-container { width: 90vw; max-width: 400px; height: 6px; background: #222; border-radius: 10px; margin: 15px 0; overflow: hidden; display: none; }
+        #timer-bar { width: 100%; height: 100%; background: #00ff41; box-shadow: 0 0 15px #00ff41; transition: width 0.1s linear; }
 
-        .btn-main { background: #bc13fe; color: #fff; border: none; padding: 18px 40px; border-radius: 50px; font-weight: 900; cursor: pointer; font-size: 1.1em; box-shadow: 0 8px 25px rgba(188,19,254,0.3); transition: 0.3s; text-transform: uppercase; }
-        .btn-main:active { transform: scale(0.95); }
-        .btn-reset { background: #00ff41; color: #000; display: none; margin-top: 15px; box-shadow: 0 8px 25px rgba(0,255,65,0.3); }
+        #board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 95vw; max-width: 420px; }
+        .card { height: 80px; background: #0a0a0a; border: 2px solid #222; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 30px; color: transparent; transition: 0.3s; position: relative; }
         
-        .status-msg { margin-top: 15px; font-size: 0.75em; color: #555; letter-spacing: 2px; font-weight: bold; }
+        .card.active, .card.preview { border-color: #bc13fe; box-shadow: 0 0 15px #bc13fe; color: #fff; transform: rotateY(180deg); }
+        .card.match { background: #00ff41; border-color: #00ff41; color: #000 !important; cursor: default; animation: explode 0.4s ease-out forwards; }
+        
+        /* Combo Flash [cite: 2026-01-28] */
+        .combo-active { border-color: #fff !important; box-shadow: 0 0 30px #fff !important; }
+
+        @keyframes explode { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(0.95); } }
+
+        .btn-main { background: #bc13fe; color: #fff; border: none; padding: 15px 35px; border-radius: 50px; font-weight: 900; cursor: pointer; font-size: 1em; text-transform: uppercase; box-shadow: 0 5px 20px rgba(188,19,254,0.4); }
+        .btn-reset { background: #ff0033; color: #fff; display: none; margin-top: 10px; }
+        .status-msg { margin-top: 10px; font-size: 0.7em; color: #555; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
     <div id="info-panel">
-        <h1 style="margin:0; font-size:1.6em; text-shadow: 0 0 10px #bc13fe;">🔱 SONIC CARDS S.A.</h1>
-        <p class="status-msg" id="status-txt">SISTEMA AGUARDANDO SINCRONIA</p>
-        <button id="start-btn" class="btn-main" onclick="initSonicSystem()">INICIAR TREINAMENTO</button>
-        <button id="reset-btn" class="btn-main btn-reset" onclick="initSonicSystem()">REINICIAR E EMBARALHAR</button>
+        <h1 style="margin:0; font-size:1.4em; text-shadow: 0 0 10px #bc13fe;">🔱 SONIC CARDS PRECISION</h1>
+        <div id="timer-container"><div id="timer-bar"></div></div>
+        <p class="status-msg" id="status-txt">SISTEMA EM ESPERA</p>
+        <button id="start-btn" class="btn-main" onclick="initSonicSystem()">INICIAR PROTOCOLO</button>
+        <button id="reset-btn" class="btn-main btn-reset" onclick="location.reload()">REINICIAR SISTEMA</button>
     </div>
 
     <div id="board"></div>
 
     <script>
-        // Mapeamento Expandido para 24 Cartas (12 Pares) [cite: 2026-02-28]
         const cardPairs = [
-            {s:'🔱',v:'Soberania'}, {s:'🔱',v:'Soberania'},
-            {s:'🌹',v:'Raridade'}, {s:'🌹',v:'Raridade'},
-            {s:'⚡',v:'Impulso'}, {s:'⚡',v:'Impulso'},
-            {s:'💀',v:'Risco'}, {s:'💀',v:'Risco'},
-            {s:'💎',v:'Blindagem'}, {s:'💎',v:'Blindagem'},
-            {s:'🌀',v:'Vortex'}, {s:'🌀',v:'Vortex'},
-            {s:'⚛️',v:'Atomo'}, {s:'⚛️',v:'Atomo'},
-            {s:'👁️',v:'Visão'}, {s:'👁️',v:'Visão'},
-            {s:'🛡️',v:'Escudo'}, {s:'🛡️',v:'Escudo'},
-            {s:'🔊',v:'Som'}, {s:'🔊',v:'Som'},
-            {s:'🧠',v:'Mente'}, {s:'🧠',v:'Mente'},
-            {s:'🔥',v:'Ação'}, {s:'🔥',v:'Ação'}
+            {s:'🔱',v:'Soberania'}, {s:'🔱',v:'Soberania'}, {s:'🌹',v:'Raridade'}, {s:'🌹',v:'Raridade'},
+            {s:'⚡',v:'Impulso'}, {s:'⚡',v:'Impulso'}, {s:'💀',v:'Risco'}, {s:'💀',v:'Risco'},
+            {s:'💎',v:'Blindagem'}, {s:'💎',v:'Blindagem'}, {s:'🌀',v:'Vortex'}, {s:'🌀',v:'Vortex'},
+            {s:'⚛️',v:'Atomo'}, {s:'⚛️',v:'Atomo'}, {s:'👁️',v:'Visão'}, {s:'👁️',v:'Visão'},
+            {s:'🛡️',v:'Defesa'}, {s:'🛡️',v:'Defesa'}, {s:'🔊',v:'Som'}, {s:'🔊',v:'Som'},
+            {s:'🧠',v:'Mente'}, {s:'🧠',v:'Mente'}, {s:'🔥',v:'Ação'}, {s:'🔥',v:'Ação'}
         ];
         
-        let flippedCards = [];
-        let matchedCount = 0;
+        let flippedCards = [], matchedCount = 0, isProcessing = true, combo = 0;
+        let timeLeft = 60, timerInterval;
         const synth = window.speechSynthesis;
 
-        function speak(text) {
+        function speak(text, fast = false) {
             synth.cancel(); 
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'pt-BR';
-            utterance.pitch = 0.8;
-            utterance.rate = 1.1; // Levemente mais rápido para agilidade [cite: 2026-01-28]
+            utterance.pitch = fast ? 1.2 : 0.8;
+            utterance.rate = fast ? 1.4 : 1.1;
             synth.speak(utterance);
+        }
+
+        function startTimer() {
+            document.getElementById('timer-container').style.display = 'block';
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.1;
+                let percentage = (timeLeft / 60) * 100;
+                document.getElementById('timer-bar').style.width = percentage + "%";
+                if (timeLeft <= 15) document.getElementById('timer-bar').style.background = "#ff0033";
+                if (timeLeft <= 0) gameOver();
+            }, 100);
+        }
+
+        function gameOver() {
+            clearInterval(timerInterval);
+            isProcessing = true;
+            speak("Tempo esgotado. Falha na blindagem.");
+            document.getElementById('status-txt').innerText = "SISTEMA COMPROMETIDO";
+            document.getElementById('reset-btn').style.display = 'inline-block';
         }
 
         function initSonicSystem() {
             document.getElementById('start-btn').style.display = 'none';
-            document.getElementById('reset-btn').style.display = 'none';
-            document.getElementById('status-txt').innerText = "OUÇA OS PADRÕES S.A.";
-            document.getElementById('status-txt').style.color = "#555";
-            
+            document.getElementById('status-txt').innerText = "MEMORIZE OS PADRÕES...";
             const board = document.getElementById('board');
             board.innerHTML = '';
-            flippedCards = [];
-            matchedCount = 0;
-            
-            // Embaralhamento Quântico
             cardPairs.sort(() => Math.random() - 0.5);
 
             cardPairs.forEach((data) => {
                 const card = document.createElement('div');
-                card.className = 'card';
+                card.className = 'card preview';
                 card.dataset.symbol = data.s;
                 card.dataset.voice = data.v;
-                
+                card.innerText = data.s;
                 card.onclick = () => {
+                    if (isProcessing) return;
                     if (flippedCards.length < 2 && !card.classList.contains('active') && !card.classList.contains('match')) {
                         card.classList.add('active');
                         card.innerText = card.dataset.symbol;
-                        speak(card.dataset.voice);
+                        speak(card.dataset.voice, combo > 1);
                         flippedCards.push(card);
                         if (flippedCards.length === 2) checkMatch();
                     }
                 };
                 board.appendChild(card);
             });
-            speak("Sistema 2.0 Ativo. Identifique a Soberania.");
+
+            speak("Memorize em três segundos.");
+            setTimeout(() => {
+                document.querySelectorAll('.card').forEach(c => { c.classList.remove('preview'); c.innerText = ''; });
+                isProcessing = false;
+                document.getElementById('status-txt').innerText = "EXECUTAR!";
+                speak("Protocolo iniciado. Rápido.");
+                startTimer();
+            }, 3000);
         }
 
         function checkMatch() {
             const [c1, c2] = flippedCards;
             if (c1.dataset.voice === c2.dataset.voice) {
-                // Sucesso: Explosão Visual [cite: 2026-02-28]
+                combo++;
                 setTimeout(() => {
-                    c1.classList.add('match');
-                    c2.classList.add('match');
-                    speak("Confirmado.");
+                    c1.classList.add('match'); c2.classList.add('match');
+                    if (combo > 1) { speak("Combo " + combo, true); } else { speak("Ok."); }
                     matchedCount++;
-                    if (matchedCount === cardPairs.length / 2) {
-                        document.getElementById('status-txt').innerText = "TREINAMENTO S.A. COMPLETO";
-                        document.getElementById('status-txt').style.color = "#00ff41";
-                        document.getElementById('reset-btn').style.display = 'inline-block';
-                        speak("Nível de percepção máximo atingido. Excelente.");
-                    }
+                    if (matchedCount === cardPairs.length / 2) win();
                     flippedCards = [];
-                }, 350); // Delay reduzido para -50% da projeção inicial [cite: 2026-01-16]
+                }, 300);
             } else {
+                combo = 0;
                 setTimeout(() => {
-                    c1.classList.remove('active');
-                    c2.classList.remove('active');
-                    c1.innerText = '';
-                    c2.innerText = '';
+                    c1.classList.remove('active'); c2.classList.remove('active');
+                    c1.innerText = ''; c2.innerText = '';
                     flippedCards = [];
-                }, 850);
+                }, 800);
             }
+        }
+
+        function win() {
+            clearInterval(timerInterval);
+            speak("Soberania atingida em " + (60 - timeLeft).toFixed(1) + " segundos. Excelente.");
+            document.getElementById('status-txt').innerText = "PRECISÃO ABSOLUTA";
+            document.getElementById('reset-btn').style.display = 'inline-block';
+            document.getElementById('reset-btn').style.background = "#00ff41";
+            document.getElementById('reset-btn').innerText = "NOVO PROTOCOLO";
         }
     </script>
 </body>
