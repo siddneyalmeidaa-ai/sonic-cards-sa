@@ -3,31 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SONIC CARDS - S.A. EDITION</title>
+    <title>SONIC CARDS - S.A. ULTIMATE</title>
     <style>
-        body { background: #000; color: #bc13fe; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        #board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 90vw; max-width: 400px; }
-        .card { height: 110px; background: #0a0a0a; border: 2px solid #222; border-radius: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 40px; color: transparent; transition: 0.4s; position: relative; }
-        .card.active { border-color: #bc13fe; box-shadow: 0 0 25px #bc13fe; color: #fff; transform: rotateY(180deg); }
-        .card.match { background: #00ff41; border-color: #00ff41; color: #000 !important; cursor: default; box-shadow: 0 0 15px #00ff41; transform: scale(0.95); }
-        #info-panel { margin-bottom: 30px; text-align: center; width: 100%; }
-        .btn-main { background: #bc13fe; color: #fff; border: none; padding: 20px 40px; border-radius: 50px; font-weight: 900; cursor: pointer; font-size: 1.2em; box-shadow: 0 10px 30px rgba(188,19,254,0.3); }
-        .btn-reset { background: #00ff41; color: #000; display: none; margin-top: 10px; } /* Botão de Reset Escondido */
-        .status-msg { margin-top: 15px; font-size: 0.8em; color: #555; letter-spacing: 2px; }
+        /* Estética Neon & Blindagem Visual S.A. [cite: 2026-02-13] */
+        body { background: #000; color: #bc13fe; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow-x: hidden; padding: 20px 0; }
+        
+        #info-panel { text-align: center; width: 100%; margin-bottom: 20px; z-index: 10; }
+        
+        /* Tabuleiro Expandido: 4 Colunas x 6 Linhas [cite: 2026-02-28] */
+        #board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 95vw; max-width: 450px; perspective: 1000px; }
+        
+        .card { height: 85px; background: #0a0a0a; border: 2px solid #222; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 32px; color: transparent; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
+        
+        .card.active { border-color: #bc13fe; box-shadow: 0 0 20px #bc13fe; color: #fff; transform: rotateY(180deg); }
+        
+        /* Efeito de Explosão e Acerto [cite: 2026-02-28] */
+        .card.match { background: #00ff41; border-color: #00ff41; color: #000 !important; cursor: default; animation: explode 0.5s ease-out forwards; transform: scale(0.92); box-shadow: 0 0 25px #00ff41; }
+        
+        @keyframes explode {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.15); filter: brightness(2); box-shadow: 0 0 50px #00ff41; }
+            100% { transform: scale(0.92); filter: brightness(1); }
+        }
+
+        .btn-main { background: #bc13fe; color: #fff; border: none; padding: 18px 40px; border-radius: 50px; font-weight: 900; cursor: pointer; font-size: 1.1em; box-shadow: 0 8px 25px rgba(188,19,254,0.3); transition: 0.3s; text-transform: uppercase; }
+        .btn-main:active { transform: scale(0.95); }
+        .btn-reset { background: #00ff41; color: #000; display: none; margin-top: 15px; box-shadow: 0 8px 25px rgba(0,255,65,0.3); }
+        
+        .status-msg { margin-top: 15px; font-size: 0.75em; color: #555; letter-spacing: 2px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="info-panel">
-        <h1 style="margin:0; font-size:1.8em; text-shadow: 0 0 10px #bc13fe;">🔱 SONIC CARDS SA</h1>
+        <h1 style="margin:0; font-size:1.6em; text-shadow: 0 0 10px #bc13fe;">🔱 SONIC CARDS S.A.</h1>
         <p class="status-msg" id="status-txt">SISTEMA AGUARDANDO SINCRONIA</p>
         <button id="start-btn" class="btn-main" onclick="initSonicSystem()">INICIAR TREINAMENTO</button>
-        <button id="reset-btn" class="btn-main btn-reset" onclick="initSonicSystem()">JOGAR NOVAMENTE</button>
+        <button id="reset-btn" class="btn-main btn-reset" onclick="initSonicSystem()">REINICIAR E EMBARALHAR</button>
     </div>
 
     <div id="board"></div>
 
     <script>
+        // Mapeamento Expandido para 24 Cartas (12 Pares) [cite: 2026-02-28]
         const cardPairs = [
             {s:'🔱',v:'Soberania'}, {s:'🔱',v:'Soberania'},
             {s:'🌹',v:'Raridade'}, {s:'🌹',v:'Raridade'},
@@ -36,24 +54,30 @@
             {s:'💎',v:'Blindagem'}, {s:'💎',v:'Blindagem'},
             {s:'🌀',v:'Vortex'}, {s:'🌀',v:'Vortex'},
             {s:'⚛️',v:'Atomo'}, {s:'⚛️',v:'Atomo'},
-            {s:'👁️',v:'Vigilancia'}, {s:'👁️',v:'Vigilancia'}
+            {s:'👁️',v:'Visão'}, {s:'👁️',v:'Visão'},
+            {s:'🛡️',v:'Escudo'}, {s:'🛡️',v:'Escudo'},
+            {s:'🔊',v:'Som'}, {s:'🔊',v:'Som'},
+            {s:'🧠',v:'Mente'}, {s:'🧠',v:'Mente'},
+            {s:'🔥',v:'Ação'}, {s:'🔥',v:'Ação'}
         ];
         
         let flippedCards = [];
         let matchedCount = 0;
+        const synth = window.speechSynthesis;
 
         function speak(text) {
+            synth.cancel(); 
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'pt-BR';
-            utterance.pitch = 0.75;
-            window.speechSynthesis.speak(utterance);
+            utterance.pitch = 0.8;
+            utterance.rate = 1.1; // Levemente mais rápido para agilidade [cite: 2026-01-28]
+            synth.speak(utterance);
         }
 
         function initSonicSystem() {
-            // Reset de interface e lógica [cite: 2026-01-28]
             document.getElementById('start-btn').style.display = 'none';
             document.getElementById('reset-btn').style.display = 'none';
-            document.getElementById('status-txt').innerText = "OUÇA E PAREIE OS PADRÕES";
+            document.getElementById('status-txt').innerText = "OUÇA OS PADRÕES S.A.";
             document.getElementById('status-txt').style.color = "#555";
             
             const board = document.getElementById('board');
@@ -61,10 +85,10 @@
             flippedCards = [];
             matchedCount = 0;
             
-            // Embaralhamento S.A.
+            // Embaralhamento Quântico
             cardPairs.sort(() => Math.random() - 0.5);
 
-            cardPairs.forEach((data, index) => {
+            cardPairs.forEach((data) => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.dataset.symbol = data.s;
@@ -81,25 +105,26 @@
                 };
                 board.appendChild(card);
             });
-            speak("Sistema Reiniciado. Boa sorte S.A.");
+            speak("Sistema 2.0 Ativo. Identifique a Soberania.");
         }
 
         function checkMatch() {
             const [c1, c2] = flippedCards;
             if (c1.dataset.voice === c2.dataset.voice) {
+                // Sucesso: Explosão Visual [cite: 2026-02-28]
                 setTimeout(() => {
                     c1.classList.add('match');
                     c2.classList.add('match');
                     speak("Confirmado.");
                     matchedCount++;
-                    flippedCards = [];
                     if (matchedCount === cardPairs.length / 2) {
-                        document.getElementById('status-txt').innerText = "TREINAMENTO COMPLETO";
+                        document.getElementById('status-txt').innerText = "TREINAMENTO S.A. COMPLETO";
                         document.getElementById('status-txt').style.color = "#00ff41";
-                        document.getElementById('reset-btn').style.display = 'inline-block'; // APARECE O BOTÃO
-                        speak("Excelente, S.A. Deseja jogar novamente?");
+                        document.getElementById('reset-btn').style.display = 'inline-block';
+                        speak("Nível de percepção máximo atingido. Excelente.");
                     }
-                }, 400);
+                    flippedCards = [];
+                }, 350); // Delay reduzido para -50% da projeção inicial [cite: 2026-01-16]
             } else {
                 setTimeout(() => {
                     c1.classList.remove('active');
@@ -107,7 +132,7 @@
                     c1.innerText = '';
                     c2.innerText = '';
                     flippedCards = [];
-                }, 1000);
+                }, 850);
             }
         }
     </script>
