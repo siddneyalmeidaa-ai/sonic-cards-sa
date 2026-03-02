@@ -10,27 +10,20 @@
         #digital-clock { font-size: 2.5em; font-weight: 900; color: #00ff41; text-shadow: 0 0 15px #00ff41; margin: 5px 0; display: none; }
         #timer-container { width: 90vw; max-width: 400px; height: 10px; background: #222; border-radius: 10px; margin: 5px auto; overflow: hidden; border: 1px solid #333; display: none; }
         #timer-bar { width: 100%; height: 100%; background: #00ff41; box-shadow: 0 0 15px #00ff41; transition: width 0.1s linear; }
-        
         #board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 95vw; max-width: 420px; }
         .card { height: 75px; background: #0a0a0a; border: 2px solid #222; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 28px; color: transparent; transition: 0.3s; }
         .card.active, .card.preview { border-color: #bc13fe; box-shadow: 0 0 15px #bc13fe; color: #fff; transform: rotateY(180deg); }
         .card.match { background: #00ff41; border-color: #00ff41; color: #000 !important; cursor: default; animation: explode 0.4s ease-out forwards; }
-        
         @keyframes explode { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(0.95); } }
-        
         .btn-main { background: #bc13fe; color: #fff; border: none; padding: 15px 35px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; box-shadow: 0 5px 20px rgba(188,19,254,0.4); margin-top: 10px; }
-        
-        /* Telas de Resultado e Ranking [cite: 2025-12-29] */
         #result-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 100; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         .metric-box { border: 2px solid #00ff41; padding: 25px; border-radius: 20px; background: #050505; color: #00ff41; box-shadow: 0 0 40px rgba(0,255,65,0.2); width: 85%; max-width: 350px; }
-        
         .favelinha-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 0.8em; color: #bc13fe; }
-        .favelinha-table th { border-bottom: 1px solid #bc13fe; padding: 5px; }
+        .favelinha-table th { border-bottom: 1px solid #bc13fe; padding: 5px; color: #00ff41; }
         .favelinha-table td { padding: 5px; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
-
     <div id="info-panel">
         <h1 style="margin:0; font-size:1.2em;">🔱 S.A. ULTIMATE ENGINE</h1>
         <div id="digital-clock">60.0</div>
@@ -38,26 +31,23 @@
         <p id="status-txt" style="font-size: 0.7em; color: #555; letter-spacing: 2px;">AUDITORIA DE ELITE</p>
         <button id="start-btn" class="btn-main" onclick="initSonicSystem()">INICIAR PROTOCOLO</button>
     </div>
-
     <div id="board"></div>
-
     <div id="result-screen">
         <div class="metric-box">
-            <h2 style="margin-top:0;">🔱 RELATÓRIO S.A.</h2>
-            <p id="res-percent">PRECISÃO: 0%</p>
-            <p id="res-time">TEMPO: 0s</p>
+            <h2 style="margin:0; font-size: 1.2em;">🔱 RELATÓRIO S.A.</h2>
+            <p id="res-percent" style="margin: 5px 0;">PRECISÃO: 0%</p>
+            <p id="res-time" style="margin: 5px 0;">TEMPO: 0s</p>
             <p id="res-status" style="font-weight: 900; font-size: 1.8em; margin: 10px 0;">STATUS</p>
-            
             <div id="ranking-container">
                 <p style="color:#fff; font-size:0.7em; margin-bottom:5px;">📋 TABELA FAVELINHA (TOP RECORDES)</p>
-                <table class="favelinha-table" id="favelinha-body">
-                    </table>
+                <table class="favelinha-table">
+                    <thead><tr><th>DATA</th><th>PRECISÃO</th><th>TEMPO</th></tr></thead>
+                    <tbody id="favelinha-body"></tbody>
+                </table>
             </div>
-
-            <button class="btn-main" onclick="location.reload()" style="margin-top:20px;">NOVO CICLO</button>
+            <button class="btn-main" onclick="location.reload()" style="margin-top:20px; background: #00ff41; color: #000;">NOVO CICLO</button>
         </div>
     </div>
-
     <script>
         const cardPairs = [
             {s:'🔱',v:'Soberania'}, {s:'🔱',v:'Soberania'}, {s:'🌹',v:'Raridade'}, {s:'🌹',v:'Raridade'},
@@ -67,7 +57,6 @@
             {s:'🛡️',v:'Defesa'}, {s:'🛡️',v:'Defesa'}, {s:'🔊',v:'Som'}, {s:'🔊',v:'Som'},
             {s:'🧠',v:'Mente'}, {s:'🧠',v:'Mente'}, {s:'🔥',v:'Ação'}, {s:'🔥',v:'Ação'}
         ];
-        
         let flippedCards = [], matchedCount = 0, isProcessing = true;
         let timeLeft = 60.0, totalClicks = 0, timerInterval;
         const synth = window.speechSynthesis;
@@ -101,8 +90,7 @@
                 };
                 board.appendChild(card);
             });
-
-            speak("Memorize os padrões, S.A.");
+            speak("Memorize.");
             setTimeout(() => {
                 document.querySelectorAll('.card').forEach(c => { c.classList.remove('preview'); c.innerText = ''; });
                 isProcessing = false;
@@ -123,12 +111,13 @@
             display.innerText = timeLeft.toFixed(1);
             bar.style.width = Math.min(100, (timeLeft / 60) * 100) + "%";
             if (timeLeft <= 10) { display.style.color = "#ff0033"; bar.style.background = "#ff0033"; }
+            else { display.style.color = "#00ff41"; bar.style.background = "#00ff41"; }
         }
 
         function checkMatch() {
             const [c1, c2] = flippedCards;
             if (c1.dataset.voice === c2.dataset.voice) {
-                timeLeft = Math.min(60, timeLeft + 4); // Bônus [cite: 2026-01-28]
+                timeLeft = Math.min(60, timeLeft + 4);
                 setTimeout(() => {
                     c1.classList.add('match'); c2.classList.add('match');
                     speak("Bônus.");
@@ -137,7 +126,7 @@
                     flippedCards = [];
                 }, 300);
             } else {
-                timeLeft -= 2; // Penalidade IPI [cite: 2026-01-28]
+                timeLeft -= 2;
                 setTimeout(() => {
                     c1.classList.remove('active'); c2.classList.remove('active');
                     c1.innerText = ''; c2.innerText = '';
@@ -146,20 +135,13 @@
             }
         }
 
-        function saveRecord(precision, time) {
-            let history = JSON.parse(localStorage.getItem('sa_history') || "[]");
-            history.push({ precision, time, date: new Date().toLocaleDateString() });
-            history.sort((a, b) => b.precision - a.precision || b.time - a.time);
-            localStorage.setItem('sa_history', JSON.stringify(history.slice(0, 5)));
-            updateFavelinhaUI();
-        }
-
         function updateFavelinhaUI() {
             let history = JSON.parse(localStorage.getItem('sa_history') || "[]");
-            const table = document.getElementById('favelinha-body');
-            table.innerHTML = `<tr><th>DATA</th><th>PRECISÃO</th><th>TEMPO</th></tr>`;
+            const tbody = document.getElementById('favelinha-body');
+            tbody.innerHTML = "";
             history.forEach(r => {
-                table.innerHTML += `<tr><td>${r.date}</td><td>${r.precision}%</td><td>${r.time}s</td></tr>`;
+                const row = `<tr><td>${r.date}</td><td>${r.precision}%</td><td>${r.time}s</td></tr>`;
+                tbody.innerHTML += row;
             });
         }
 
@@ -169,6 +151,16 @@
             const precision = totalClicks > 0 ? Math.round(((matchedCount * 2) / totalClicks) * 100) : 0;
             const finalTime = Math.max(0, timeLeft).toFixed(1);
             
+            // Salva apenas se ganhar ou se houver precisão mínima [cite: 2025-12-29]
+            if (precision > 0) {
+                let history = JSON.parse(localStorage.getItem('sa_history') || "[]");
+                history.push({ precision, time: finalTime, date: new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) });
+                history.sort((a, b) => b.precision - a.precision || b.time - a.time);
+                localStorage.setItem('sa_history', JSON.stringify(history.slice(0, 5)));
+            }
+
+            updateFavelinhaUI(); // Atualiza ANTES de mostrar a tela [cite: 2026-02-28]
+            
             document.getElementById('result-screen').style.display = 'flex';
             document.getElementById('res-percent').innerText = `PRECISÃO: ${precision}%`;
             document.getElementById('res-time').innerText = `TEMPO FINAL: ${finalTime}s`;
@@ -176,15 +168,15 @@
             if (win && precision >= 70) {
                 document.getElementById('res-status').innerText = `LIBERADO ${precision}%`;
                 document.getElementById('res-status').style.color = "#00ff41";
-                speak("Soberania absoluta.");
-                saveRecord(precision, finalTime);
+                speak("Soberania atingida.");
             } else {
                 document.getElementById('res-status').innerText = `PENDENTE ${precision}%`;
                 document.getElementById('res-status').style.color = "#ff0033";
-                speak("Status Pendente. Tente novamente.");
-                updateFavelinhaUI();
+                speak("Status Pendente.");
             }
         }
+        // Inicializa a tabela vazia ou com dados existentes ao carregar a página
+        window.onload = updateFavelinhaUI;
     </script>
 </body>
 </html>
