@@ -3,147 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SONIC CARDS - S.A. ULTIMATE</title>
+    <title>S.A. ULTIMATE - HIGH VISION</title>
     <style>
-        body { background: #000; color: #bc13fe; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow-x: hidden; padding: 10px; }
-        #info-panel { text-align: center; width: 100%; margin-bottom: 5px; z-index: 10; }
-        #digital-clock { font-size: 2.5em; font-weight: 900; color: #00ff41; text-shadow: 0 0 15px #00ff41; margin: 5px 0; }
-        #timer-container { width: 90vw; max-width: 400px; height: 10px; background: #222; border-radius: 10px; margin: 5px auto; overflow: hidden; border: 1px solid #333; }
-        #timer-bar { width: 100%; height: 100%; background: #00ff41; box-shadow: 0 0 15px #00ff41; transition: width 0.1s linear; }
-        
-        /* GRID DE 24 CARDS RESTAURADO [cite: 2026-02-28] */
-        #board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 95vw; max-width: 420px; }
-        .card { height: 75px; background: #0a0a0a; border: 2px solid #222; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 28px; color: transparent; transition: 0.3s; position: relative; }
-        
-        /* FIX PARA OS SÍMBOLOS APARECEREM EM TODOS OS CELULARES */
-        .card span { display: none; pointer-events: none; }
-        .card.active span, .card.preview span { display: block; color: #fff; }
-        
-        .card.active, .card.preview { border-color: #bc13fe; box-shadow: 0 0 15px #bc13fe; transform: rotateY(180deg); }
-        .card.match { background: #00ff41; border-color: #00ff41; color: #000 !important; cursor: default; }
-        .card.match span { display: block; color: #000; }
-        
-        .btn-main { background: #bc13fe; color: #fff; border: none; padding: 15px 35px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        #result-screen { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
-        .metric-box { border: 2px solid #00ff41; padding: 25px; border-radius: 20px; background: #050505; color: #00ff41; width: 85%; max-width: 350px; text-align: center; }
-        .favelinha-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 0.8em; color: #bc13fe; }
+        body { background: #000; color: #bc13fe; font-family: monospace; margin: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        #splash { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+        .dna { width: 90px; height: 90px; border: 4px solid #bc13fe; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; box-shadow: 0 0 40px #bc13fe; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #game-ui { display: none; flex-direction: column; align-items: center; width: 100%; opacity: 0; transition: 1s; }
+        #board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: 98vw; max-width: 400px; padding: 5px; }
+        .card { height: 60px; background: #0a0a0a; border: 1px solid #222; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: 0.3s; position: relative; }
+        .card span { visibility: hidden; pointer-events: none; }
+        .card.active span, .card.preview span { visibility: visible; }
+        .card.active { border-color: #bc13fe; box-shadow: 0 0 15px #bc13fe; transform: scale(1.05); z-index: 5; }
+        .card.match { background: #00ff41; border-color: #00ff41; }
+        .card.match span { visibility: visible; filter: brightness(0); }
+        #digital-clock { font-size: 2.5em; font-weight: 900; color: #00ff41; text-shadow: 0 0 15px #00ff41; }
+        #timer-bar-fill { width: 100%; height: 6px; background: #00ff41; box-shadow: 0 0 10px #00ff41; transition: width 0.1s linear; }
+        #res-screen { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; }
+        .metric-box { border: 2px solid #00ff41; padding: 30px; border-radius: 30px; background: #050505; color: #fff; width: 85%; max-width: 360px; text-align: center; }
     </style>
 </head>
-<body>
-    <div id="info-panel">
-        <h1 style="margin:0; font-size:1.2em;">🔱 S.A. ULTIMATE ENGINE</h1>
-        <div id="digital-clock">60.0</div>
-        <div id="timer-container"><div id="timer-bar"></div></div>
-        <button id="start-btn" class="btn-main" onclick="initSonicSystem()">INICIAR PROTOCOLO</button>
-    </div>
-    <div id="board"></div>
+<body onclick="startRitual()">
 
-    <div id="result-screen">
+    <div id="splash">
+        <div class="dna"></div>
+        <div style="color:#00ff41; font-weight:900; margin-top:25px;">SINC_SEED_MN2PN [36 CARDS]</div>
+    </div>
+
+    <div id="game-ui">
+        <div id="digital-clock">60.0</div>
+        <div style="width:90%; height:6px; background:#111; margin:10px 0;"><div id="timer-bar-fill"></div></div>
+        <div id="board"></div>
+    </div>
+
+    <div id="res-screen">
         <div class="metric-box">
-            <h2 style="margin:0; font-size: 1.2em;">🔱 RELATÓRIO S.A.</h2>
-            <p id="res-percent">PRECISÃO: 0%</p>
-            <p id="res-status" style="font-weight: 900; font-size: 1.8em; margin: 10px 0;">STATUS</p>
-            <table class="favelinha-table">
-                <thead><tr><th>DATA</th><th>PRECISÃO</th><th>TEMPO</th></tr></thead>
-                <tbody id="favelinha-body"></tbody>
-            </table>
-            <button class="btn-main" onclick="location.reload()" style="background:#00ff41; color:#000;">NOVO CICLO</button>
+            <h2 id="final-status" style="font-size: 2em; margin: 0;">STATUS</h2>
+            <p id="final-prec" style="color:#00ff41; font-weight:bold;"></p>
+            <p style="font-size:10px; color:#666;">IPI ATIVO | PROJEÇÃO -50% [cite: 2026-01-16]</p>
+            <button onclick="location.reload()" style="background:#bc13fe; color:#fff; padding:15px 40px; border:none; border-radius:50px; font-weight:900; margin-top:20px;">REBOOT</button>
         </div>
     </div>
 
     <script>
-        // TODOS OS 24 CARDS CONFORME O SCRIPT ORIGINAL [cite: 2026-02-28]
         const cardPairs = [
-            {s:'🔱',v:'Soberania'}, {s:'🔱',v:'Soberania'}, {s:'🌹',v:'Raridade'}, {s:'🌹',v:'Raridade'},
-            {s:'⚡',v:'Impulso'}, {s:'⚡',v:'Impulso'}, {s:'💀',v:'Risco'}, {s:'💀',v:'Risco'},
-            {s:'💎',v:'Blindagem'}, {s:'💎',v:'Blindagem'}, {s:'🌀',v:'Vortex'}, {s:'🌀',v:'Vortex'},
-            {s:'⚛️',v:'Atomo'}, {s:'⚛️',v:'Atomo'}, {s:'👁️',v:'Visão'}, {s:'👁️',v:'Visão'},
-            {s:'🛡️',v:'Defesa'}, {s:'🛡️',v:'Defesa'}, {s:'🔊',v:'Som'}, {s:'🔊',v:'Som'},
-            {s:'🧠',v:'Mente'}, {s:'🧠',v:'Mente'}, {s:'🔥',v:'Ação'}, {s:'🔥',v:'Ação'}
+            {s:'🔱',v:'Soberania'},{s:'🔱',v:'Soberania'},{s:'🌹',v:'Raridade'},{s:'🌹',v:'Raridade'},
+            {s:'⚡',v:'Impulso'},{s:'⚡',v:'Impulso'},{s:'💀',v:'Risco'},{s:'💀',v:'Risco'},
+            {s:'💎',v:'Blindagem'},{s:'💎',v:'Blindagem'},{s:'🌀',v:'Vortex'},{s:'🌀',v:'Vortex'},
+            {s:'⚛️',v:'Atomo'},{s:'⚛️',v:'Atomo'},{s:'👁️',v:'Visão'},{s:'👁️',v:'Visão'},
+            {s:'🛡️',v:'Defesa'},{s:'🛡️',v:'Defesa'},{s:'🔊',v:'Som'},{s:'🔊',v:'Som'},
+            {s:'🧠',v:'Mente'},{s:'🧠',v:'Mente'},{s:'🔥',v:'Ação'},{s:'🔥',v:'Ação'},
+            {s:'🔗',v:'Conexão'},{s:'🔗',v:'Conexão'},{s:'📡',v:'Sinal'},{s:'📡',v:'Sinal'},
+            {s:'🧬',v:'Genética'},{s:'🧬',v:'Genética'},{s:'🌑',v:'Omissão'},{s:'🌑',v:'Omissão'},
+            {s:'🛰️',v:'Órbita'},{s:'🛰️',v:'Órbita'},{s:'🔑',v:'Acesso'},{s:'🔑',v:'Acesso'}
         ];
 
-        let flippedCards = [], matchedCount = 0, isProcessing = true;
-        let timeLeft = 60.0, totalClicks = 0, timerInterval;
+        let flipped = [], matched = 0, isLocked = true, time = 60.0, clicks = 0, timer, previewSeconds = 7;
 
-        function speak(text) {
-            const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'pt-BR'; u.pitch = 0.8; window.speechSynthesis.speak(u);
+        function speak(t){ window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='pt-BR'; u.rate=1.4; window.speechSynthesis.speak(u); }
+
+        function startRitual() {
+            if(document.getElementById('splash').style.display === 'none') return;
+            speak("Iniciando varredura estratégica de sete segundos. Mapeie o terreno, S.A.");
+            document.getElementById('splash').style.display = "none";
+            document.getElementById('game-ui').style.display = "flex";
+            setTimeout(() => { document.getElementById('game-ui').style.opacity = "1"; initBoard(); }, 100);
         }
 
-        function initSonicSystem() {
-            document.getElementById('start-btn').style.display = 'none';
-            const board = document.getElementById('board');
-            board.innerHTML = '';
-            cardPairs.sort(() => Math.random() - 0.5);
-            cardPairs.forEach((data) => {
-                const card = document.createElement('div');
-                card.className = 'card preview';
-                card.dataset.voice = data.v;
-                card.innerHTML = `<span>${data.s}</span>`;
-                card.onclick = () => {
-                    if (isProcessing) return;
-                    if (flippedCards.length < 2 && !card.classList.contains('active') && !card.classList.contains('match')) {
-                        totalClicks++;
-                        card.classList.add('active');
-                        speak(data.v);
-                        flippedCards.push(card);
-                        if (flippedCards.length === 2) checkMatch();
-                    }
+        function initBoard() {
+            const b = document.getElementById('board');
+            cardPairs.sort(() => Math.random() - 0.5).forEach(data => {
+                const c = document.createElement('div');
+                c.className = 'card preview';
+                c.innerHTML = `<span>${data.s}</span>`;
+                c.onclick = () => {
+                    if(isLocked || flipped.length >= 2 || c.classList.contains('active') || c.classList.contains('match')) return;
+                    clicks++; c.classList.add('active'); speak(data.v); flipped.push({el:c, v:data.v});
+                    if(flipped.length === 2) checkMatch();
                 };
-                board.appendChild(card);
+                b.appendChild(c);
             });
 
+            // LOGICA DE PREVIEW AMPLIADA [cite: 2026-01-23]
             setTimeout(() => {
+                speak("Ação em três. Dois. Um. Agora.");
                 document.querySelectorAll('.card').forEach(c => c.classList.remove('preview'));
-                isProcessing = false;
-                timerInterval = setInterval(() => {
-                    timeLeft -= 0.1;
-                    document.getElementById('digital-clock').innerText = timeLeft.toFixed(1);
-                    document.getElementById('timer-bar').style.width = (timeLeft/60)*100 + "%";
-                    if (timeLeft <= 0) endSession(false);
+                isLocked = false;
+                timer = setInterval(() => {
+                    time -= 0.1;
+                    document.getElementById('digital-clock').innerText = Math.max(0, time).toFixed(1);
+                    document.getElementById('timer-bar-fill').style.width = (time/60)*100 + "%";
+                    if(time <= 0) end(false);
                 }, 100);
-            }, 3000);
+            }, previewSeconds * 1000);
         }
 
         function checkMatch() {
-            const [c1, c2] = flippedCards;
-            if (c1.dataset.voice === c2.dataset.voice) {
-                c1.classList.add('match'); c2.classList.add('match');
-                matchedCount++;
-                flippedCards = [];
-                if (matchedCount === cardPairs.length / 2) endSession(true);
+            const [c1, c2] = flipped;
+            if(c1.v === c2.v) {
+                c1.el.classList.add('match'); c2.el.classList.add('match');
+                matched++; flipped = [];
+                if(matched === 18) end(true);
             } else {
-                setTimeout(() => {
-                    c1.classList.remove('active'); c2.classList.remove('active');
-                    flippedCards = [];
-                }, 600);
+                isLocked = true;
+                setTimeout(() => { c1.el.classList.remove('active'); c2.el.classList.remove('active'); flipped = []; isLocked = false; }, 450);
             }
         }
 
-        function endSession(win) {
-            clearInterval(timerInterval);
-            const precision = Math.round(((matchedCount * 2) / (totalClicks || 1)) * 100);
-            const statusEl = document.getElementById('res-status');
-            
-            // Sincronização de Status com Porcentagem [cite: 2026-01-12]
-            statusEl.innerText = win ? `${precision}% LIBERADO` : `${precision}% PENDENTE`;
-            statusEl.style.color = win ? "#00ff41" : "#ff0033";
-            
-            document.getElementById('result-screen').style.display = 'flex';
-            
-            // Salva com -50% da projeção [cite: 2026-01-16]
-            let history = JSON.parse(localStorage.getItem('sa_history') || "[]");
-            history.push({ precision: Math.round(precision * 0.5), time: timeLeft.toFixed(1), date: new Date().toLocaleDateString() });
-            localStorage.setItem('sa_history', JSON.stringify(history.slice(-5)));
-            updateFavelinhaUI();
+        function end(win) {
+            clearInterval(timer); isLocked = true;
+            const prec = Math.round(((matched * 2) / (clicks || 1)) * 100);
+            const status = document.getElementById('final-status');
+            status.innerText = win ? prec + "% LIBERADO" : prec + "% PENDENTE";
+            status.style.color = win ? "#00ff41" : "#ff0000";
+            document.getElementById('final-prec').innerText = "PRECISÃO REAL: " + Math.round(prec * 0.5) + "%";
+            document.getElementById('res-screen').style.display = "flex";
+            speak(win ? "Alvo neutralizado." : "Protocolo de visão falhou.");
         }
-
-        function updateFavelinhaUI() {
-            let history = JSON.parse(localStorage.getItem('sa_history') || "[]");
-            const tbody = document.getElementById('favelinha-body');
-            tbody.innerHTML = history.map(r => `<tr><td>${r.date}</td><td>${r.precision}%</td><td>${r.time}s</td></tr>`).join('');
-        }
-        window.onload = updateFavelinhaUI;
     </script>
 </body>
 </html>
