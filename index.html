@@ -2,25 +2,31 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SONIC CARDS - S.A. ULTIMATE</title>
     <style>
         body { background: #000; color: #bc13fe; font-family: 'Courier New', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; overflow-x: hidden; padding: 10px; }
         #info-panel { text-align: center; width: 100%; margin-bottom: 5px; z-index: 10; }
-        #digital-clock { font-size: 2.5em; font-weight: 900; color: #00ff41; text-shadow: 0 0 15px #00ff41; margin: 5px 0; display: none; }
-        #timer-container { width: 90vw; max-width: 400px; height: 10px; background: #222; border-radius: 10px; margin: 5px auto; overflow: hidden; border: 1px solid #333; display: none; }
+        #digital-clock { font-size: 2.5em; font-weight: 900; color: #00ff41; text-shadow: 0 0 15px #00ff41; margin: 5px 0; }
+        #timer-container { width: 90vw; max-width: 400px; height: 10px; background: #222; border-radius: 10px; margin: 5px auto; overflow: hidden; border: 1px solid #333; }
         #timer-bar { width: 100%; height: 100%; background: #00ff41; box-shadow: 0 0 15px #00ff41; transition: width 0.1s linear; }
+        
+        /* GRID DE 24 CARDS RESTAURADO [cite: 2026-02-28] */
         #board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 95vw; max-width: 420px; }
-        .card { height: 75px; background: #0a0a0a; border: 2px solid #222; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 28px; color: transparent; transition: 0.3s; }
-        .card.active, .card.preview { border-color: #bc13fe; box-shadow: 0 0 15px #bc13fe; color: #fff; transform: rotateY(180deg); }
-        .card.match { background: #00ff41; border-color: #00ff41; color: #000 !important; cursor: default; animation: explode 0.4s ease-out forwards; }
-        @keyframes explode { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(0.95); } }
-        .btn-main { background: #bc13fe; color: #fff; border: none; padding: 15px 35px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; box-shadow: 0 5px 20px rgba(188,19,254,0.4); margin-top: 10px; }
-        #result-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 100; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .metric-box { border: 2px solid #00ff41; padding: 25px; border-radius: 20px; background: #050505; color: #00ff41; box-shadow: 0 0 40px rgba(0,255,65,0.2); width: 85%; max-width: 350px; }
+        .card { height: 75px; background: #0a0a0a; border: 2px solid #222; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 28px; color: transparent; transition: 0.3s; position: relative; }
+        
+        /* FIX PARA OS SÍMBOLOS APARECEREM EM TODOS OS CELULARES */
+        .card span { display: none; pointer-events: none; }
+        .card.active span, .card.preview span { display: block; color: #fff; }
+        
+        .card.active, .card.preview { border-color: #bc13fe; box-shadow: 0 0 15px #bc13fe; transform: rotateY(180deg); }
+        .card.match { background: #00ff41; border-color: #00ff41; color: #000 !important; cursor: default; }
+        .card.match span { display: block; color: #000; }
+        
+        .btn-main { background: #bc13fe; color: #fff; border: none; padding: 15px 35px; border-radius: 50px; font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        #result-screen { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
+        .metric-box { border: 2px solid #00ff41; padding: 25px; border-radius: 20px; background: #050505; color: #00ff41; width: 85%; max-width: 350px; text-align: center; }
         .favelinha-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 0.8em; color: #bc13fe; }
-        .favelinha-table th { border-bottom: 1px solid #bc13fe; padding: 5px; color: #00ff41; }
-        .favelinha-table td { padding: 5px; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
@@ -28,27 +34,25 @@
         <h1 style="margin:0; font-size:1.2em;">🔱 S.A. ULTIMATE ENGINE</h1>
         <div id="digital-clock">60.0</div>
         <div id="timer-container"><div id="timer-bar"></div></div>
-        <p id="status-txt" style="font-size: 0.7em; color: #555; letter-spacing: 2px;">AUDITORIA DE ELITE</p>
         <button id="start-btn" class="btn-main" onclick="initSonicSystem()">INICIAR PROTOCOLO</button>
     </div>
     <div id="board"></div>
+
     <div id="result-screen">
         <div class="metric-box">
             <h2 style="margin:0; font-size: 1.2em;">🔱 RELATÓRIO S.A.</h2>
-            <p id="res-percent" style="margin: 5px 0;">PRECISÃO: 0%</p>
-            <p id="res-time" style="margin: 5px 0;">TEMPO: 0s</p>
+            <p id="res-percent">PRECISÃO: 0%</p>
             <p id="res-status" style="font-weight: 900; font-size: 1.8em; margin: 10px 0;">STATUS</p>
-            <div id="ranking-container">
-                <p style="color:#fff; font-size:0.7em; margin-bottom:5px;">📋 TABELA FAVELINHA (TOP RECORDES)</p>
-                <table class="favelinha-table">
-                    <thead><tr><th>DATA</th><th>PRECISÃO</th><th>TEMPO</th></tr></thead>
-                    <tbody id="favelinha-body"></tbody>
-                </table>
-            </div>
-            <button class="btn-main" onclick="location.reload()" style="margin-top:20px; background: #00ff41; color: #000;">NOVO CICLO</button>
+            <table class="favelinha-table">
+                <thead><tr><th>DATA</th><th>PRECISÃO</th><th>TEMPO</th></tr></thead>
+                <tbody id="favelinha-body"></tbody>
+            </table>
+            <button class="btn-main" onclick="location.reload()" style="background:#00ff41; color:#000;">NOVO CICLO</button>
         </div>
     </div>
+
     <script>
+        // TODOS OS 24 CARDS CONFORME O SCRIPT ORIGINAL [cite: 2026-02-28]
         const cardPairs = [
             {s:'🔱',v:'Soberania'}, {s:'🔱',v:'Soberania'}, {s:'🌹',v:'Raridade'}, {s:'🌹',v:'Raridade'},
             {s:'⚡',v:'Impulso'}, {s:'⚡',v:'Impulso'}, {s:'💀',v:'Risco'}, {s:'💀',v:'Risco'},
@@ -57,15 +61,13 @@
             {s:'🛡️',v:'Defesa'}, {s:'🛡️',v:'Defesa'}, {s:'🔊',v:'Som'}, {s:'🔊',v:'Som'},
             {s:'🧠',v:'Mente'}, {s:'🧠',v:'Mente'}, {s:'🔥',v:'Ação'}, {s:'🔥',v:'Ação'}
         ];
+
         let flippedCards = [], matchedCount = 0, isProcessing = true;
         let timeLeft = 60.0, totalClicks = 0, timerInterval;
-        const synth = window.speechSynthesis;
 
         function speak(text) {
-            synth.cancel(); 
             const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'pt-BR'; u.pitch = 0.8; u.rate = 1.2;
-            synth.speak(u);
+            u.lang = 'pt-BR'; u.pitch = 0.8; window.speechSynthesis.speak(u);
         }
 
         function initSonicSystem() {
@@ -76,106 +78,71 @@
             cardPairs.forEach((data) => {
                 const card = document.createElement('div');
                 card.className = 'card preview';
-                card.dataset.symbol = data.s; card.dataset.voice = data.v;
-                card.innerText = data.s;
+                card.dataset.voice = data.v;
+                card.innerHTML = `<span>${data.s}</span>`;
                 card.onclick = () => {
                     if (isProcessing) return;
                     if (flippedCards.length < 2 && !card.classList.contains('active') && !card.classList.contains('match')) {
                         totalClicks++;
-                        card.classList.add('active'); card.innerText = card.dataset.symbol;
-                        speak(card.dataset.voice);
+                        card.classList.add('active');
+                        speak(data.v);
                         flippedCards.push(card);
                         if (flippedCards.length === 2) checkMatch();
                     }
                 };
                 board.appendChild(card);
             });
-            speak("Memorize.");
+
             setTimeout(() => {
-                document.querySelectorAll('.card').forEach(c => { c.classList.remove('preview'); c.innerText = ''; });
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('preview'));
                 isProcessing = false;
-                document.getElementById('digital-clock').style.display = 'block';
-                document.getElementById('timer-container').style.display = 'block';
-                speak("Protocolo iniciado.");
                 timerInterval = setInterval(() => {
                     timeLeft -= 0.1;
-                    updateTimerUI();
+                    document.getElementById('digital-clock').innerText = timeLeft.toFixed(1);
+                    document.getElementById('timer-bar').style.width = (timeLeft/60)*100 + "%";
                     if (timeLeft <= 0) endSession(false);
                 }, 100);
             }, 3000);
         }
 
-        function updateTimerUI() {
-            const display = document.getElementById('digital-clock');
-            const bar = document.getElementById('timer-bar');
-            display.innerText = timeLeft.toFixed(1);
-            bar.style.width = Math.min(100, (timeLeft / 60) * 100) + "%";
-            if (timeLeft <= 10) { display.style.color = "#ff0033"; bar.style.background = "#ff0033"; }
-            else { display.style.color = "#00ff41"; bar.style.background = "#00ff41"; }
-        }
-
         function checkMatch() {
             const [c1, c2] = flippedCards;
             if (c1.dataset.voice === c2.dataset.voice) {
-                timeLeft = Math.min(60, timeLeft + 4);
-                setTimeout(() => {
-                    c1.classList.add('match'); c2.classList.add('match');
-                    speak("Bônus.");
-                    matchedCount++;
-                    if (matchedCount === cardPairs.length / 2) endSession(true);
-                    flippedCards = [];
-                }, 300);
+                c1.classList.add('match'); c2.classList.add('match');
+                matchedCount++;
+                flippedCards = [];
+                if (matchedCount === cardPairs.length / 2) endSession(true);
             } else {
-                timeLeft -= 2;
                 setTimeout(() => {
                     c1.classList.remove('active'); c2.classList.remove('active');
-                    c1.innerText = ''; c2.innerText = '';
                     flippedCards = [];
-                }, 700);
+                }, 600);
             }
+        }
+
+        function endSession(win) {
+            clearInterval(timerInterval);
+            const precision = Math.round(((matchedCount * 2) / (totalClicks || 1)) * 100);
+            const statusEl = document.getElementById('res-status');
+            
+            // Sincronização de Status com Porcentagem [cite: 2026-01-12]
+            statusEl.innerText = win ? `${precision}% LIBERADO` : `${precision}% PENDENTE`;
+            statusEl.style.color = win ? "#00ff41" : "#ff0033";
+            
+            document.getElementById('result-screen').style.display = 'flex';
+            
+            // Salva com -50% da projeção [cite: 2026-01-16]
+            let history = JSON.parse(localStorage.getItem('sa_history') || "[]");
+            history.push({ precision: Math.round(precision * 0.5), time: timeLeft.toFixed(1), date: new Date().toLocaleDateString() });
+            localStorage.setItem('sa_history', JSON.stringify(history.slice(-5)));
+            updateFavelinhaUI();
         }
 
         function updateFavelinhaUI() {
             let history = JSON.parse(localStorage.getItem('sa_history') || "[]");
             const tbody = document.getElementById('favelinha-body');
-            tbody.innerHTML = "";
-            history.forEach(r => {
-                const row = `<tr><td>${r.date}</td><td>${r.precision}%</td><td>${r.time}s</td></tr>`;
-                tbody.innerHTML += row;
-            });
+            tbody.innerHTML = history.map(r => `<tr><td>${r.date}</td><td>${r.precision}%</td><td>${r.time}s</td></tr>`).join('');
         }
-
-        function endSession(win) {
-            clearInterval(timerInterval);
-            isProcessing = true;
-            const precision = totalClicks > 0 ? Math.round(((matchedCount * 2) / totalClicks) * 100) : 0;
-            const finalTime = Math.max(0, timeLeft).toFixed(1);
-            
-            // Salva apenas se ganhar ou se houver precisão mínima [cite: 2025-12-29]
-            if (precision > 0) {
-                let history = JSON.parse(localStorage.getItem('sa_history') || "[]");
-                history.push({ precision, time: finalTime, date: new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) });
-                history.sort((a, b) => b.precision - a.precision || b.time - a.time);
-                localStorage.setItem('sa_history', JSON.stringify(history.slice(0, 5)));
-            }
-
-            updateFavelinhaUI(); // Atualiza ANTES de mostrar a tela [cite: 2026-02-28]
-            
-            document.getElementById('result-screen').style.display = 'flex';
-            document.getElementById('res-percent').innerText = `PRECISÃO: ${precision}%`;
-            document.getElementById('res-time').innerText = `TEMPO FINAL: ${finalTime}s`;
-            
-            if (win && precision >= 70) {
-                document.getElementById('res-status').innerText = `LIBERADO ${precision}%`;
-                document.getElementById('res-status').style.color = "#00ff41";
-                speak("Soberania atingida.");
-            } else {
-                document.getElementById('res-status').innerText = `PENDENTE ${precision}%`;
-                document.getElementById('res-status').style.color = "#ff0033";
-                speak("Status Pendente.");
-            }
-        }
-        // Inicializa a tabela vazia ou com dados existentes ao carregar a página
         window.onload = updateFavelinhaUI;
     </script>
 </body>
