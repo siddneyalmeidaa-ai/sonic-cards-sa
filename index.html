@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>S.A. ULTIMATE - HIGH VISION</title>
+    <title>S.A. STRATEGIST 36 - REAL PRECISION</title>
     <style>
         body { background: #000; color: #bc13fe; font-family: monospace; margin: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
         #splash { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
-        .dna { width: 90px; height: 90px; border: 4px solid #bc13fe; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; box-shadow: 0 0 40px #bc13fe; }
+        .vortex { width: 80px; height: 80px; border: 4px solid #bc13fe; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; box-shadow: 0 0 40px #bc13fe; }
         @keyframes spin { to { transform: rotate(360deg); } }
         #game-ui { display: none; flex-direction: column; align-items: center; width: 100%; opacity: 0; transition: 1s; }
         #board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: 98vw; max-width: 400px; padding: 5px; }
@@ -19,29 +19,37 @@
         .card.match span { visibility: visible; filter: brightness(0); }
         #digital-clock { font-size: 2.5em; font-weight: 900; color: #00ff41; text-shadow: 0 0 15px #00ff41; }
         #timer-bar-fill { width: 100%; height: 6px; background: #00ff41; box-shadow: 0 0 10px #00ff41; transition: width 0.1s linear; }
-        #res-screen { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; }
-        .metric-box { border: 2px solid #00ff41; padding: 30px; border-radius: 30px; background: #050505; color: #fff; width: 85%; max-width: 360px; text-align: center; }
+        #res-screen { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .metric-box { border: 2px solid #00ff41; padding: 20px; border-radius: 25px; background: #050505; color: #fff; width: 90%; max-width: 380px; }
+        .favelinha { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 10px; color: #bc13fe; border: 1px solid #111; }
+        .favelinha th { background: #111; padding: 5px; color: #00ff41; }
+        .favelinha td { border: 1px solid #111; padding: 5px; }
     </style>
 </head>
 <body onclick="startRitual()">
 
     <div id="splash">
-        <div class="dna"></div>
-        <div style="color:#00ff41; font-weight:900; margin-top:25px;">SINC_SEED_MN2PN [36 CARDS]</div>
+        <div class="vortex"></div>
+        <div style="color:#00ff41; font-weight:900; margin-top:25px; letter-spacing:2px;">SINC_SEED_S.A. [36 CARDS]</div>
     </div>
 
     <div id="game-ui">
-        <div id="digital-clock">60.0</div>
+        <div id="digital-clock">120.0</div>
         <div style="width:90%; height:6px; background:#111; margin:10px 0;"><div id="timer-bar-fill"></div></div>
         <div id="board"></div>
     </div>
 
     <div id="res-screen">
         <div class="metric-box">
-            <h2 id="final-status" style="font-size: 2em; margin: 0;">STATUS</h2>
-            <p id="final-prec" style="color:#00ff41; font-weight:bold;"></p>
-            <p style="font-size:10px; color:#666;">IPI ATIVO | PROJEÇÃO -50% [cite: 2026-01-16]</p>
-            <button onclick="location.reload()" style="background:#bc13fe; color:#fff; padding:15px 40px; border:none; border-radius:50px; font-weight:900; margin-top:20px;">REBOOT</button>
+            <h2 id="final-status" style="font-size: 1.5em; margin: 0;">STATUS</h2>
+            <p id="final-prec" style="color:#00ff41; font-weight:bold; margin: 10px 0;"></p>
+            
+            <table class="favelinha">
+                <thead><tr><th>DATA</th><th>PRECISÃO REAL</th><th>TEMPO</th></tr></thead>
+                <tbody id="favelinha-body"></tbody>
+            </table>
+
+            <button onclick="location.reload()" style="background:#bc13fe; color:#fff; padding:15px 40px; border:none; border-radius:50px; font-weight:900; margin-top:15px; cursor:pointer; width:100%;">REBOOT</button>
         </div>
     </div>
 
@@ -58,13 +66,13 @@
             {s:'🛰️',v:'Órbita'},{s:'🛰️',v:'Órbita'},{s:'🔑',v:'Acesso'},{s:'🔑',v:'Acesso'}
         ];
 
-        let flipped = [], matched = 0, isLocked = true, time = 60.0, clicks = 0, timer, previewSeconds = 7;
+        let flipped = [], matched = 0, isLocked = true, time = 120.0, clicks = 0, timer;
 
         function speak(t){ window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='pt-BR'; u.rate=1.4; window.speechSynthesis.speak(u); }
 
         function startRitual() {
             if(document.getElementById('splash').style.display === 'none') return;
-            speak("Iniciando varredura estratégica de sete segundos. Mapeie o terreno, S.A.");
+            speak("Iniciando varredura estratégica de dez segundos. Foco na precisão absoluta.");
             document.getElementById('splash').style.display = "none";
             document.getElementById('game-ui').style.display = "flex";
             setTimeout(() => { document.getElementById('game-ui').style.opacity = "1"; initBoard(); }, 100);
@@ -78,48 +86,5 @@
                 c.innerHTML = `<span>${data.s}</span>`;
                 c.onclick = () => {
                     if(isLocked || flipped.length >= 2 || c.classList.contains('active') || c.classList.contains('match')) return;
-                    clicks++; c.classList.add('active'); speak(data.v); flipped.push({el:c, v:data.v});
-                    if(flipped.length === 2) checkMatch();
-                };
-                b.appendChild(c);
-            });
-
-            // LOGICA DE PREVIEW AMPLIADA [cite: 2026-01-23]
-            setTimeout(() => {
-                speak("Ação em três. Dois. Um. Agora.");
-                document.querySelectorAll('.card').forEach(c => c.classList.remove('preview'));
-                isLocked = false;
-                timer = setInterval(() => {
-                    time -= 0.1;
-                    document.getElementById('digital-clock').innerText = Math.max(0, time).toFixed(1);
-                    document.getElementById('timer-bar-fill').style.width = (time/60)*100 + "%";
-                    if(time <= 0) end(false);
-                }, 100);
-            }, previewSeconds * 1000);
-        }
-
-        function checkMatch() {
-            const [c1, c2] = flipped;
-            if(c1.v === c2.v) {
-                c1.el.classList.add('match'); c2.el.classList.add('match');
-                matched++; flipped = [];
-                if(matched === 18) end(true);
-            } else {
-                isLocked = true;
-                setTimeout(() => { c1.el.classList.remove('active'); c2.el.classList.remove('active'); flipped = []; isLocked = false; }, 450);
-            }
-        }
-
-        function end(win) {
-            clearInterval(timer); isLocked = true;
-            const prec = Math.round(((matched * 2) / (clicks || 1)) * 100);
-            const status = document.getElementById('final-status');
-            status.innerText = win ? prec + "% LIBERADO" : prec + "% PENDENTE";
-            status.style.color = win ? "#00ff41" : "#ff0000";
-            document.getElementById('final-prec').innerText = "PRECISÃO REAL: " + Math.round(prec * 0.5) + "%";
-            document.getElementById('res-screen').style.display = "flex";
-            speak(win ? "Alvo neutralizado." : "Protocolo de visão falhou.");
-        }
-    </script>
-</body>
-</html>
+                    clicks++; c.classList.add('active'); speak(data.v
+        
