@@ -3,58 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>S.A. STRATEGIST 36 - REAL PRECISION</title>
+    <title>S.A. STRATEGIST 36 - FULL GRID</title>
     <style>
-        body { background: #000; color: #bc13fe; font-family: monospace; margin: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        #splash { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
-        .vortex { width: 80px; height: 80px; border: 4px solid #bc13fe; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; box-shadow: 0 0 40px #bc13fe; }
+        body { background: #000; color: #bc13fe; font-family: monospace; margin: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; min-height: 100vh; -webkit-tap-highlight-color: transparent; }
+        
+        #splash { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+        .vortex { width: 90px; height: 90px; border: 4px solid #bc13fe; border-radius: 50%; border-top-color: transparent; animation: spin 0.8s linear infinite; box-shadow: 0 0 30px #bc13fe; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        #game-ui { display: none; flex-direction: column; align-items: center; width: 100%; opacity: 0; transition: 1s; }
+        
+        #game-ui { display: none; flex-direction: column; align-items: center; width: 100%; opacity: 0; transition: 0.5s; }
+        /* GRID 4 COLUNAS X 9 LINHAS = 36 CARDS */
         #board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: 98vw; max-width: 400px; padding: 5px; }
-        .card { height: 60px; background: #0a0a0a; border: 1px solid #222; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: 0.3s; position: relative; }
+        
+        .card { height: 62px; background: #0a0a0a; border: 1px solid #222; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 26px; transition: 0.2s; position: relative; }
         .card span { visibility: hidden; pointer-events: none; }
         .card.active span, .card.preview span { visibility: visible; }
-        .card.active { border-color: #bc13fe; box-shadow: 0 0 15px #bc13fe; transform: scale(1.05); z-index: 5; }
+        .card.active { border-color: #bc13fe; box-shadow: 0 0 15px #bc13fe; z-index: 5; }
         .card.match { background: #00ff41; border-color: #00ff41; }
         .card.match span { visibility: visible; filter: brightness(0); }
-        #digital-clock { font-size: 2.5em; font-weight: 900; color: #00ff41; text-shadow: 0 0 15px #00ff41; }
-        #timer-bar-fill { width: 100%; height: 6px; background: #00ff41; box-shadow: 0 0 10px #00ff41; transition: width 0.1s linear; }
-        #res-screen { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .metric-box { border: 2px solid #00ff41; padding: 20px; border-radius: 25px; background: #050505; color: #fff; width: 90%; max-width: 380px; }
-        .favelinha { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 10px; color: #bc13fe; border: 1px solid #111; }
-        .favelinha th { background: #111; padding: 5px; color: #00ff41; }
-        .favelinha td { border: 1px solid #111; padding: 5px; }
+        
+        #clock { font-size: 2.8em; font-weight: 900; color: #00ff41; text-shadow: 0 0 15px #00ff41; }
+        #bar-fill { height: 6px; background: #00ff41; box-shadow: 0 0 10px #00ff41; transition: width 0.1s linear; width: 100%; }
+        
+        #res { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .box { border: 2px solid #00ff41; padding: 25px; border-radius: 25px; background: #050505; color: #fff; width: 85%; max-width: 380px; }
+        .favelinha { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 10px; color: #bc13fe; }
+        .favelinha th, .favelinha td { border: 1px solid #111; padding: 5px; text-align: center; }
     </style>
 </head>
-<body onclick="startRitual()">
+<body onclick="start()">
 
     <div id="splash">
         <div class="vortex"></div>
-        <div style="color:#00ff41; font-weight:900; margin-top:25px; letter-spacing:2px;">SINC_SEED_S.A. [36 CARDS]</div>
+        <h2 style="color:#00ff41; margin-top:25px; letter-spacing:3px;">SINC_SEED_S.A.</h2>
+        <p style="color:#bc13fe; font-size:10px;">TOQUE PARA DESTRAVAR 36 CARDS</p>
     </div>
 
     <div id="game-ui">
-        <div id="digital-clock">120.0</div>
-        <div style="width:90%; height:6px; background:#111; margin:10px 0;"><div id="timer-bar-fill"></div></div>
+        <div id="clock">120.0</div>
+        <div style="width:90%; height:6px; background:#111; margin:10px 0;"><div id="bar-fill"></div></div>
         <div id="board"></div>
     </div>
 
-    <div id="res-screen">
-        <div class="metric-box">
-            <h2 id="final-status" style="font-size: 1.5em; margin: 0;">STATUS</h2>
-            <p id="final-prec" style="color:#00ff41; font-weight:bold; margin: 10px 0;"></p>
-            
+    <div id="res">
+        <div class="box">
+            <h1 id="st" style="margin:0;">STATUS</h1>
+            <p id="pr" style="color:#00ff41; font-weight:900;"></p>
             <table class="favelinha">
                 <thead><tr><th>DATA</th><th>PRECISÃO REAL</th><th>TEMPO</th></tr></thead>
-                <tbody id="favelinha-body"></tbody>
+                <tbody id="f-body"></tbody>
             </table>
-
-            <button onclick="location.reload()" style="background:#bc13fe; color:#fff; padding:15px 40px; border:none; border-radius:50px; font-weight:900; margin-top:15px; cursor:pointer; width:100%;">REBOOT</button>
+            <button onclick="location.reload()" style="background:#bc13fe; color:#fff; padding:15px; border:none; border-radius:50px; font-weight:900; margin-top:20px; width:100%; cursor:pointer;">REBOOT</button>
         </div>
     </div>
 
     <script>
-        const cardPairs = [
+        // LISTA COMPLETA: 18 PARES = 36 CARDS
+        const pairs = [
             {s:'🔱',v:'Soberania'},{s:'🔱',v:'Soberania'},{s:'🌹',v:'Raridade'},{s:'🌹',v:'Raridade'},
             {s:'⚡',v:'Impulso'},{s:'⚡',v:'Impulso'},{s:'💀',v:'Risco'},{s:'💀',v:'Risco'},
             {s:'💎',v:'Blindagem'},{s:'💎',v:'Blindagem'},{s:'🌀',v:'Vortex'},{s:'🌀',v:'Vortex'},
@@ -66,25 +71,77 @@
             {s:'🛰️',v:'Órbita'},{s:'🛰️',v:'Órbita'},{s:'🔑',v:'Acesso'},{s:'🔑',v:'Acesso'}
         ];
 
-        let flipped = [], matched = 0, isLocked = true, time = 120.0, clicks = 0, timer;
+        let flipped = [], matched = 0, locked = true, time = 120.0, clicks = 0, timer;
 
-        function speak(t){ window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='pt-BR'; u.rate=1.4; window.speechSynthesis.speak(u); }
+        function speak(t){ try{ window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='pt-BR'; u.rate=1.4; window.speechSynthesis.speak(u); }catch(e){} }
 
-        function startRitual() {
+        function start() {
             if(document.getElementById('splash').style.display === 'none') return;
-            speak("Iniciando varredura estratégica de dez segundos. Foco na precisão absoluta.");
             document.getElementById('splash').style.display = "none";
             document.getElementById('game-ui').style.display = "flex";
-            setTimeout(() => { document.getElementById('game-ui').style.opacity = "1"; initBoard(); }, 100);
+            setTimeout(() => { document.getElementById('game-ui').style.opacity = "1"; init(); }, 50);
+            speak("Protocolo de 36 cartas. Dez segundos de varredura estratégica.");
         }
 
-        function initBoard() {
+        function init() {
             const b = document.getElementById('board');
-            cardPairs.sort(() => Math.random() - 0.5).forEach(data => {
+            pairs.sort(() => Math.random() - 0.5).forEach(d => {
                 const c = document.createElement('div');
                 c.className = 'card preview';
-                c.innerHTML = `<span>${data.s}</span>`;
-                c.onclick = () => {
-                    if(isLocked || flipped.length >= 2 || c.classList.contains('active') || c.classList.contains('match')) return;
-                    clicks++; c.classList.add('active'); speak(data.v
-        
+                c.innerHTML = `<span>${d.s}</span>`;
+                c.onclick = (e) => {
+                    e.stopPropagation();
+                    if(locked || flipped.length >= 2 || c.classList.contains('active') || c.classList.contains('match')) return;
+                    clicks++; c.classList.add('active'); speak(d.v); flipped.push({el:c, s:d.v});
+                    if(flipped.length === 2) check();
+                };
+                b.appendChild(c);
+            });
+
+            setTimeout(() => {
+                speak("Ação iniciada.");
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('preview'));
+                locked = false;
+                timer = setInterval(() => {
+                    time -= 0.1;
+                    document.getElementById('clock').innerText = Math.max(0, time).toFixed(1);
+                    document.getElementById('bar-fill').style.width = (time/120)*100 + "%";
+                    if(time <= 0) end(false);
+                }, 100);
+            }, 10000); // 10 SEGUNDOS DE VARREDURA
+        }
+
+        function check() {
+            const [c1, c2] = flipped;
+            if(c1.s === c2.s) {
+                c1.el.classList.add('match'); c2.el.classList.add('match');
+                matched++; flipped = [];
+                if(matched === 18) end(true);
+            } else {
+                locked = true;
+                setTimeout(() => { c1.el.classList.remove('active'); c2.el.classList.remove('active'); flipped = []; locked = false; }, 400);
+            }
+        }
+
+        function end(win) {
+            clearInterval(timer); locked = true;
+            const precision = Math.round(((matched * 2) / (clicks || 1)) * 100);
+            const timeSpent = (120 - time).toFixed(1);
+            
+            let hist = JSON.parse(localStorage.getItem('sa_h') || "[]");
+            hist.push({ date: new Date().toLocaleDateString('pt-BR'), prec: precision, time: timeSpent });
+            localStorage.setItem('sa_h', JSON.stringify(hist.slice(-5)));
+
+            document.getElementById('st').innerText = win ? precision + "% LIBERADO" : precision + "% PENDENTE";
+            document.getElementById('st').style.color = win ? "#00ff41" : "#ff0000";
+            document.getElementById('pr').innerText = "PRECISÃO REAL: " + precision + "%";
+            
+            const tbody = document.getElementById('f-body');
+            tbody.innerHTML = hist.reverse().map(h => `<tr><td>${h.date}</td><td>${h.prec}%</td><td>${h.time}s</td></tr>`).join('');
+            
+            document.getElementById('res').style.display = "flex";
+            speak(win ? "Operação concluída." : "Dados salvos.");
+        }
+    </script>
+</body>
+</html>
